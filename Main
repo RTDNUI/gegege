@@ -1,0 +1,95 @@
+-- Авто фарм фруктов для Blox Fruits
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TeleportService = game:GetService("TeleportService")
+local LocalPlayer = Players.LocalPlayer
+
+local FruitModels = {
+    "Quake Fruit","Magma Fruit","Light Fruit","Ice Fruit","Buddha Fruit",
+    "Flame Fruit","Dark Fruit","Rubber Fruit","Bomb Fruit","Spike Fruit",
+    "Meme Fruit","Chop Fruit","Blade Fruit","Smoke Fruit","Phoenix Fruit",
+    "Spring Fruit","Spider Fruit","Sand Fruit","Gravity Fruit","Pain Fruit",
+    "Barrier Fruit","Dough Fruit","Control Fruit","Dragon Fruit","Venom Fruit",
+    "Spin Fruit","Door Fruit","Portal Fruit","Rocket Fruit","Kilo Fruit",
+    "Diamond Fruit","Love Fruit","Falcon Fruit","Revive Fruit","Ghost Fruit",
+    "Shadow Fruit","Soul Fruit","Spirit Fruit","Yeti Fruit","Tiger Fruit",
+    "Mammoth Fruit","Sound Fruit","Kitsune Fruit","T-Rex Fruit","Gas Fruit","Eagle Fruit"
+}
+
+local FruitScriptNames = {
+    "Quake-Quake","Magma-Magma","Light-Light","Ice-Ice","Buddha-Buddha",
+    "Flame-Flame","Dark-Dark","Rubber-Rubber","Bomb-Bomb","Spike-Spike",
+    "Meme-Meme","Chop-Chop","Blade-Blade","Smoke-Smoke","Phoenix-Phoenix",
+    "Spring-Spring","Spider-Spider","Sand-Sand","Gravity-Gravity","Pain-Pain",
+    "Barrier-Barrier","Dough-Dough","Control-Control","Dragon-Dragon","Venom-Venom",
+    "Spin-Spin","Door-Door","Portal-Portal","Rocket-Rocket","Kilo-Kilo",
+    "Diamond-Diamond","Love-Love","Falcon-Falcon","Revive-Revive","Ghost-Ghost",
+    "Shadow-Shadow","Soul-Soul","Spirit-Spirit","Yeti-Yeti","Tiger-Tiger",
+    "Mammoth-Mammoth","Sound-Sound","Kitsune-Kitsune","T-Rex-T-Rex","Gas-Gas","Eagle-Eagle"
+}
+
+local function SetTeam()
+    ReplicatedStorage.Remotes.CommF_:InvokeServer("SetTeam","Marines")
+end
+
+local function TeleportToMain()
+    TeleportService:Teleport(2753915549)
+end
+
+local function StoreFruit(fruitObject, fruitIndex)
+    local fruitName = FruitModels[fruitIndex]
+    local scriptName = FruitScriptNames[fruitIndex]
+    
+    if fruitObject then
+        ReplicatedStorage.Remotes.CommF_:InvokeServer("StoreFruit",scriptName,fruitObject)
+    end
+end
+
+local function FindAndCollectFruit()
+    local fruit = workspace:FindFirstChild("Fruit")
+    
+    if not fruit then
+        TeleportToMain()
+        return
+    end
+    
+    local tweenService = game:GetService("TweenService")
+    local character = LocalPlayer.Character
+    local humanoidRootPart = character and character:FindFirstChild("HumanoidRootPart")
+    
+    if humanoidRootPart then
+        local tweenInfo = TweenInfo.new(
+            (humanoidRootPart.Position - fruit.Position).Magnitude / 200,
+            Enum.EasingStyle.Linear
+        )
+        local tween = tweenService:Create(humanoidRootPart, tweenInfo, {CFrame = fruit.CFrame})
+        tween:Play()
+        tween.Completed:Wait()
+    end
+    
+    wait(0.5)
+    
+    for i, modelName in ipairs(FruitModels) do
+        local fruitItem = character and character:FindFirstChild(modelName)
+        if not fruitItem then
+            fruitItem = LocalPlayer.Backpack:FindFirstChild(modelName)
+        end
+        
+        if fruitItem then
+            StoreFruit(fruitItem, i)
+            break
+        end
+    end
+    
+    TeleportToMain()
+end
+
+local function Main()
+    repeat wait() until LocalPlayer.Character
+    wait(2)
+    SetTeam()
+    wait(1)
+    FindAndCollectFruit()
+end
+
+Main()

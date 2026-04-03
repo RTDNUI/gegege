@@ -3,7 +3,7 @@ local function AutoReexecute()
     if PlaceId == 2753915549 then
         repeat wait() until game:IsLoaded()
         wait(2)
-        loadstring(game:HttpGet("ссылка_на_твой_скрипт"))()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/RTDNUI/gegege/refs/heads/main/Main"))()
     end
 end
 

@@ -54,9 +54,7 @@ local function TeleportToMain()
 end
 
 local function StoreFruit(fruitObject, fruitIndex)
-    local fruitName = FruitModels[fruitIndex]
     local scriptName = FruitScriptNames[fruitIndex]
-    
     if fruitObject then
         ReplicatedStorage.Remotes.CommF_:InvokeServer("StoreFruit",scriptName,fruitObject)
     end
@@ -70,15 +68,15 @@ local function FindAndCollectFruit()
         return
     end
     
+    repeat wait() until LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+    
     local tweenService = game:GetService("TweenService")
     local character = LocalPlayer.Character
     local humanoidRootPart = character and character:FindFirstChild("HumanoidRootPart")
     
     if humanoidRootPart then
-        local tweenInfo = TweenInfo.new(
-            (humanoidRootPart.Position - fruit.Position).Magnitude / 200,
-            Enum.EasingStyle.Linear
-        )
+        local distance = (humanoidRootPart.Position - fruit.Position).Magnitude
+        local tweenInfo = TweenInfo.new(distance / 200, Enum.EasingStyle.Linear)
         local tween = tweenService:Create(humanoidRootPart, tweenInfo, {CFrame = fruit.CFrame})
         tween:Play()
         tween.Completed:Wait()
@@ -102,8 +100,10 @@ local function FindAndCollectFruit()
 end
 
 local function Main()
-    repeat wait() until LocalPlayer.Character
-    wait(2)
+    repeat wait() until game:IsLoaded()
+    repeat wait() until LocalPlayer
+    repeat wait() until not LocalPlayer:FindFirstChild("PlayerGui") or LocalPlayer.PlayerGui:FindFirstChild("Loading")
+    wait(1)
     SetTeam()
     wait(1)
     FindAndCollectFruit()
